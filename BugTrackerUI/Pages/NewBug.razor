@@ -2,7 +2,7 @@
 
 <h3>Add New Bug</h3>
 
-<EditForm Model="AddBug" OnInvalidSubmit="HandleValidSubmit">
+<EditForm OnValidSubmit="HandleValidSubmit" Model="AddBug">
     <InputText @bind-Value="@AddBug.Title" placeholder="Enter Title" />
     <InputText @bind-Value="@AddBug.Description" placeholder="Enter Description" />
     <InputNumber @bind-Value="@AddBug.Priority" placeholder="Enter Priority" />
