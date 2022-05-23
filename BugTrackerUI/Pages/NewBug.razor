@@ -5,9 +5,9 @@
    <InputText @bind-Value="@AddBug.Title" placeholder="Enter Title" />
    <InputText @bind-Value="@AddBug.Description" placeholder="Enter Description" />
    <InputNumber @bind-Value="@AddBug.Priority" placeholder="Enter Priority" />
+   <button type="submit"></button>
 </EditForm>
-<button type="submit"></button>
 
 @code {
-    public Bug AddBug { get; set; }
+    public Bug AddBug { get; set; } = new Bug();
 }
