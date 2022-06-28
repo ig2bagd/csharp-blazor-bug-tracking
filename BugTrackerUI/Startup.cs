@@ -29,6 +29,11 @@ namespace BugTrackerUI
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<IBugService, BugService>();
+            services.AddScoped<JsConsole>();
+
+            var cs = Configuration.GetConnectionString("DefaultConnection");
+            //services.AddDbContextFactory<WeatherDbContext>(opt => opt.UseSqlServer(cs));
+            /* services.AddDbContext<WeatherDbContext>(opt => opt.UseSqlServer(cs)); */
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,6 +57,8 @@ namespace BugTrackerUI
 
             app.UseEndpoints(endpoints =>
             {
+                //endpoints.MapRazorPages();
+                //endpoints.MapControllers();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });

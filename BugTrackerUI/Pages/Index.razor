@@ -1,6 +1,53 @@
-﻿@page "/"
+﻿@page "/index"
 @using BugTrackerUI.Components
 
 <p>This dashboard will begin to fill with widgets as you develop.</p>
+
+<Collapsible>Hello world!</Collapsible>
+
+<br />
+
+<TabControl>
+  <TabTextTemplate>
+    <img src="/images/tab.png"/> @context.Text
+  </TabTextTemplate>
+
+  <ChildContent>
+    <TabPage Text="Tab 1">
+      <h1>The first tab</h1>
+    </TabPage>
+   <TabPage Text="Tab 2">
+      <h1>The second tab</h1>
+    </TabPage>
+   <TabPage Text="Tab 3">
+      <h1>The third tab</h1>
+    </TabPage>
+  </ChildContent>
+</TabControl>
+
+<br />
+
+@for (int c = 0; c < 3; c++)
+{
+    var current = c;
+
+    <RenderFragmentChild>
+        Count: @current
+    </RenderFragmentChild>
+}
+
+<br />
+
+<Expander Expanded="true">
+    Expander 1 content
+</Expander>
+
+<Expander Expanded="true" />
+
+<button @onclick="StateHasChanged">
+    Call StateHasChanged
+</button>
+
+<br />
 
 <BugList />
