@@ -12,8 +12,9 @@
 
 @code {
     [Parameter]
+#nullable enable
     public string? ChildMessage { get; set; }
-
+#nullable disable
     [Parameter]
     public EventCallback<string> ChildMessageChanged { get; set; }
 

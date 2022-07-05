@@ -1,0 +1,20 @@
+﻿<div @attributes="AttributeDictionary">
+    @Value
+</div>
+
+@code {
+   [Parameter]
+   public string Value { get; set; }
+
+   [Parameter]
+   public Dictionary<string,object> AttributeDictionary { get; set; } = 
+            new Dictionary<string, object>()
+            {
+                {"id","div100" },
+                {"class","divClass2" },
+                {"title","Sample Title" }
+            };
+
+   [Parameter(CaptureUnmatchedValues = true)]
+   public Dictionary<string, object> ArbitraryAttributeDictionary { get; set; }
+}

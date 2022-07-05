@@ -1,0 +1,36 @@
+﻿@page "/arbitrary-parameters-parent"
+
+<ArbitraryParameters id="txtName" name="txtName" 
+                                  placeholder="Type your name - from Parent" 
+                                  maxlength="10" 
+                                  newattribute="newvalue" 
+                                  required="true" />
+
+@*<Message id="div1" 
+         class="divClass" 
+         title="This is sample <DIV> element."
+         Value="Hello World!">
+</Message>*@
+
+<Message AttributeDictionary="objDictionary" 
+         Value="Hello World!">
+</Message>
+
+@code{
+    @*public Dictionary<string, object> attributesFromParent { get; set; } = new Dictionary<string, object>()
+    {
+            { "id", "txtName" },
+            { "name", "txtName" },
+            { "placeholder", "Type Your name - from Parent" },
+            { "maxlength", 10},
+            { "newattribute", "newvalue"}
+        };*@
+
+    Dictionary<string, object> objDictionary
+       = new Dictionary<string, object>()
+         {
+             {"id","div1" },
+             {"class","divClass" },
+             {"title","This is sample <DIV> element." }
+         };
+}

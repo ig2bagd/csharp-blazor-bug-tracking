@@ -1,0 +1,25 @@
+﻿@page "/querystring"
+@inject NavigationManager navManager
+
+<h3>Query String Demo</h3>
+
+<button @onclick="Navigate">Click</button>
+
+<div>Name = @name</div>
+
+@code{
+
+    string name { get; set; }
+    void Navigate()
+    {
+        var query = new Dictionary<string, string> { { "name", "Mike" } };
+        navManager.NavigateTo(QueryHelpers.AddQueryString(navManager.Uri, query));
+        
+        var uri = navManager.ToAbsoluteUri(navManager.Uri);
+
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("name", out var param))
+        {
+            name = param.First();
+        }
+    }
+}

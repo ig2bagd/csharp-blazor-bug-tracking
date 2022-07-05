@@ -30,6 +30,8 @@ namespace BugTrackerUI
             services.AddServerSideBlazor();
             services.AddSingleton<IBugService, BugService>();
             services.AddScoped<JsConsole>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IProductService, ProductService>();
 
             var cs = Configuration.GetConnectionString("DefaultConnection");
             //services.AddDbContextFactory<WeatherDbContext>(opt => opt.UseSqlServer(cs));

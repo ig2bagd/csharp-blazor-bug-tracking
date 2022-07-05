@@ -1,0 +1,46 @@
+﻿@page "/calculator"
+
+<h3>Calculator</h3>
+
+<div class="form-group">
+   <label for="number1">Number 1</label>
+   <input type="number" class="form-control" id="number1" @bind="number1">
+</div>
+<div class="form-group">
+   <label for="number2">Number 2</label>
+   <input type="number" class="form-control" id="number2" @bind="number2">
+</div>
+<div class="form-group">
+   <label><b>Total: </b>@total</label>
+</div>
+
+<button class="btn btn-primary" @onclick="@(e => Calculate(e, 1))">Add</button>
+<button class="btn btn-primary" @onclick="@(e => Calculate(e, 2))">Subtract</button>
+
+<button class="btn btn-secondary" @onclick="Clear">Clear</button>
+
+@code {
+   private int number1 = 0;
+   private int number2 = 0;
+   private int total = 0;
+
+   private void Calculate(MouseEventArgs e, int buttonType)
+   {
+      switch (buttonType)
+      {
+         case 1:
+            total = number1 + number2;
+            break;
+         case 2:
+            total = number1 - number2;
+            break;
+      }
+   }
+
+   private void Clear()
+   {
+      number1 = 0;
+      number2 = 0;
+      total = 0;
+   }
+}

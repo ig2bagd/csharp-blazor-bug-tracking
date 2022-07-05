@@ -1,0 +1,99 @@
+﻿@page "/dashboard"
+
+<h1>Dashboard</h1>
+<br />
+<div class="row">
+   <div class="col">
+      @if (Orders != null)
+      {
+         <TableWidget Title="Recent Orders" Items="Orders">
+            <HeaderTemplate>
+               <th scope="col">Order</th>
+               <th scope="col">Date</th>
+               <th scope="col">Status</th>
+               <th scope="col">Total</th>
+            </HeaderTemplate>
+            <RowTemplate>
+               <td>@context.OrderNo</td>
+               <td>@context.OrderDate.ToShortDateString()</td>
+               <td>@context.Status</td>
+               <td>@context.OrderTotal</td>
+            </RowTemplate>
+         </TableWidget>
+      }
+   </div>
+   <div class="col">
+      @if (Products != null)
+      {
+         <TableWidget Title="Top Selling Products" Items="Products" Context="product">
+            <HeaderTemplate>
+               <th scope="col">Title</th>
+               <th scope="col">Price</th>
+               <th scope="col">Quantity</th>
+            </HeaderTemplate>
+            <RowTemplate>
+               <td>@product.Title</td>
+               <td>@product.Price</td>
+               <td>@product.Quantity</td>
+            </RowTemplate>
+         </TableWidget>
+      }
+   </div>
+</div>
+
+<div class="row">
+   <div class="col">
+      @if (Orders != null)
+      {
+         <TableWidget Title="Recent Orders" Items="Orders">
+            <HeaderTemplate>
+               <th scope="col" colspan="2">Order Details</th>
+               <th scope="col">Status</th>
+               <th scope="col">Total</th>
+            </HeaderTemplate>
+            <RowTemplate Context="order">
+               <td colspan="2">
+                  <b>Order No: </b>@order.OrderNo
+                  <br />
+                  <b>Order Date: </b>@order.OrderDate.ToShortDateString()
+               </td>
+               <td>@order.Status</td>
+               <td>@order.OrderTotal</td>
+            </RowTemplate>
+         </TableWidget>
+      }
+   </div>
+   <div class="col">
+      @if (Products != null)
+      {
+         <TableWidget Title="Top Selling Products" Items="Products" TItem="Product">
+            <RowTemplate Context="product">
+               <td>
+                  <h2>@product.Title</h2>
+                  <h4><b>@product.Price.ToString("C")</b></h4>
+               </td>
+            </RowTemplate>
+            <FooterTemplate>
+               <td class="text-right"><b>Last 30 Days</b></td>
+            </FooterTemplate>
+         </TableWidget>
+      }
+   </div>
+</div>
+
+<ul class="list-group">
+   <li class="list-group-item d-flex justify-content-between align-items-center active">
+      Latest Products
+   </li>
+   <ListWidget Items="Products" Context="product">
+      <ItemTemplate>
+         <li class="list-group-item d-flex justify-content-between align-items-center">
+            @product.Title
+            <b>@product.Price.ToString("C")</b>
+            <span class="badge badge-primary badge-pill">
+            @product.Quantity
+            </span>
+         </li>
+      </ItemTemplate>
+   </ListWidget>
+</ul>

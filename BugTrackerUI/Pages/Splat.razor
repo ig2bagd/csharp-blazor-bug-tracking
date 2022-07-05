@@ -9,6 +9,11 @@
 <input id="useAttributesDict"
        @attributes="InputAttributes" />
 
+<div @attributes="InputAttributes">
+   <p>@InputAttributes["placeholder"]</p>
+</div>
+
+
 @code {
     private string maxlength = "10";
     private string placeholder = "Input placeholder text";

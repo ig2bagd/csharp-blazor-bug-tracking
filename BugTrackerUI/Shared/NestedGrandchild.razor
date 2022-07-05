@@ -10,8 +10,9 @@
 
 @code {
     [Parameter]
+#nullable enable
     public string? GrandchildMessage { get; set; }
-
+#nullable disable
     [Parameter]
     public EventCallback<string> GrandchildMessageChanged { get; set; }
 
