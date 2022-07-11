@@ -1,15 +1,76 @@
 ﻿@page "/"
 
 <Dialog Title="Learn More">
-  Do you want to <i>learn more</i> about Blazor?
+   Do you want to <i>learn more</i> about Blazor?
 </Dialog>
 
 <button @onclick="@(() => childComponent.ChildMethod(5))">
-    Call <code>ReferenceChild.ChildMethod</code> with an argument of 5
+   Call <code>ReferenceChild.ChildMethod</code> with an argument of 5
 </button>
 
 <ReferenceChild @ref="childComponent" />
+<br />
+<br />
+
+<Boolean @bind-ValTest="agree" TrueText="Agree" FalseText="Disagree" />
+
+<div>Selected value: @agree</div>
+
+<br />
+<br />
+<button @onclick="e => IsModalOpened = true">Open modal</button>
+
+@if (SelectedButton != null)
+{
+   <p>You have selected @SelectedButton</p>
+}
+
+@* 👇 Use the modal component *@
+<Modal @bind-Open="IsModalOpened" Close="OnClose">
+   <form method="dialog">
+      <p>
+         Do you really want to do this?
+      </p>
+      <menu>
+         <button value="cancel">Cancel</button>
+         <button value="confirm">I'm sure</button>
+      </menu>
+   </form>
+</Modal>
+
+<br />
+<hr>
+
+<ul>
+   <li>Last multiple of two = @LastMultipleOfTwo</li>
+   <li>Last multiple of three = @LastMultipleOfThree</li>
+</ul>
+
+<Counter OnMultipleOfThree=@UpdateLastMultipleOfThreeValue OnMultipleOfTwoAction=@UpdateLastMultipleOfTwoValue />
 
 @code {
-  private ReferenceChild childComponent;
+   bool agree;
+   private ReferenceChild childComponent;
+
+   public bool IsModalOpened { get; set; }
+   public string SelectedButton { get; set; }
+
+   int LastMultipleOfTwo = 0;
+   int LastMultipleOfThree = 0;
+
+   void OnClose(string value)
+   {
+      SelectedButton = value;
+   }
+
+   private Task UpdateLastMultipleOfThreeValue(int value)
+   {
+      LastMultipleOfThree = value;
+      return Task.CompletedTask;
+   }
+
+   private void UpdateLastMultipleOfTwoValue(int value)
+   {
+      LastMultipleOfTwo = value;
+   }
 }

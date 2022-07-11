@@ -1,0 +1,23 @@
+﻿@* https://www.meziantou.net/showing-a-loading-screen-while-initializing-a-blazor-application.htm *@
+
+@if (isLoaded)
+{
+    @ChildContent
+}
+else
+{
+    <div>Loading screen...</div>
+}
+
+@code {
+    bool isLoaded;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(5000); // TODO actual initialization job
+        isLoaded = true;
+    }
+}

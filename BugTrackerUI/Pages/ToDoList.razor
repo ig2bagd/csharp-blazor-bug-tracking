@@ -7,34 +7,46 @@
 </div>
 
 <br />
-<table class="table">
-   <tr>
-      <th>Title</th>
-      <th>Minutes</th>
-      <th></th>
-   </tr>
-   @foreach (var todo in ToDos)
-   {
-      <ToDoItem Item="todo" OnMinutesAdded="OnMinutesAddedHandler" />
-   }
-</table>
+@if(ToDos == null)
+{
+   <div class="spinner"></div>
+}
+else
+{
+   <table class="table">
+      <tr>
+         <th>Title</th>
+         <th>Minutes</th>
+         <th></th>
+      </tr>
+      @foreach (var todo in ToDos)
+      {
+         <ToDoItem Item="todo" OnMinutesAdded="OnMinutesAddedHandler" />
+      }
+   </table>
+}
 
 @code {
 
    public List<ToDo> ToDos { get; set; }
    public int TotalMinutes { get; set; }
 
-   protected override void OnInitialized()
+   protected override async Task OnInitializedAsync()
    {
-      ToDos = new List<ToDo>()
+      await Task.Run(() =>
       {
+         System.Threading.Thread.Sleep(5000);
+
+         ToDos = new List<ToDo>()
+         {
          new ToDo() { Title = "Analysis", Minutes = 40 },
          new ToDo() { Title = "Design", Minutes = 30 },
          new ToDo() { Title = "Implementation", Minutes = 75 },
          new ToDo() { Title = "Testing", Minutes = 40 }
-      };
+         };
 
-      UpdateTotalMinutes();
+         UpdateTotalMinutes();
+      });
    }
 
    public void OnMinutesAddedHandler(MouseEventArgs e)

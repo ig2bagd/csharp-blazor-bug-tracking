@@ -1,0 +1,26 @@
+﻿@* https://www.meziantou.net/two-way-binding-in-blazor.htm *@
+<button type="button" @onclick="() => SetValue(true)" class="@(ValTest ? "active" : "")">@TrueText</button>
+<button type="button" @onclick="() => SetValue(false)" class="@(!ValTest ? "active" : "")">@FalseText</button>
+
+@code {
+   [Parameter]
+   public string TrueText { get; set; }
+
+   [Parameter]
+   public string FalseText { get; set; }
+
+   [Parameter]
+   public bool ValTest { get; set; }
+
+   [Parameter]
+   public EventCallback<bool> ValTestChanged { get; set; }
+
+   private async Task SetValue(bool value)
+   {
+      if (ValTest != value)
+      {
+         ValTest = value;
+         await ValTestChanged.InvokeAsync(value);
+      }
+   }
+}

@@ -13,57 +13,60 @@ using BugTrackerUI.Services;
 
 namespace BugTrackerUI
 {
-    public class Startup
-    {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+   public class Startup
+   {
+      public IConfiguration Configuration { get; }
+      public IWebHostEnvironment _env { get; }
+      public Startup(IConfiguration configuration, IWebHostEnvironment env)
+      {
+         Configuration = configuration;
+         _env = env;
+      }
 
-        public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddRazorPages();
-            services.AddServerSideBlazor();
-            services.AddSingleton<IBugService, BugService>();
-            services.AddScoped<JsConsole>();
-            services.AddScoped<IOrderService, OrderService>();
-            services.AddScoped<IProductService, ProductService>();
+      // This method gets called by the runtime. Use this method to add services to the container.
+      // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+      public void ConfigureServices(IServiceCollection services)
+      {
+         services.AddRazorPages();
+         services.AddServerSideBlazor().AddCircuitOptions(option => { option.DetailedErrors = _env.IsDevelopment(); });
+         services.AddTelerikBlazor();
+         services.AddSingleton<IBugService, BugService>();
+         services.AddScoped<JsConsole>();
+         services.AddScoped<IOrderService, OrderService>();
+         services.AddScoped<IProductService, ProductService>();
 
-            var cs = Configuration.GetConnectionString("DefaultConnection");
-            //services.AddDbContextFactory<WeatherDbContext>(opt => opt.UseSqlServer(cs));
-            /* services.AddDbContext<WeatherDbContext>(opt => opt.UseSqlServer(cs)); */
-        }
+         var cs = Configuration.GetConnectionString("DefaultConnection");
+         //services.AddDbContextFactory<WeatherDbContext>(opt => opt.UseSqlServer(cs));
+         /* services.AddDbContext<WeatherDbContext>(opt => opt.UseSqlServer(cs)); */
+      }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
+      // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+      public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+      {
+         if (env.IsDevelopment())
+         {
+            app.UseDeveloperExceptionPage();
+         }
+         else
+         {
+            app.UseExceptionHandler("/Error");
+            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            app.UseHsts();
+         }
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
+         app.UseHttpsRedirection();
+         app.UseStaticFiles();
 
-            app.UseRouting();
+         app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
-            {
-                //endpoints.MapRazorPages();
-                //endpoints.MapControllers();
-                endpoints.MapBlazorHub();
-                endpoints.MapFallbackToPage("/_Host");
-            });
-        }
-    }
+         app.UseEndpoints(endpoints =>
+         {
+               //endpoints.MapRazorPages();
+               //endpoints.MapControllers();
+               endpoints.MapBlazorHub();
+            endpoints.MapFallbackToPage("/_Host");
+         });
+      }
+   }
 }

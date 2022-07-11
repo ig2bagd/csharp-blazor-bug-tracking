@@ -13,7 +13,10 @@
     <title>Bug</title>
     <base href="~/" />
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="_content/Telerik.UI.for.Blazor/css/kendo-theme-default/all.css" />
     <link href="css/site.css" rel="stylesheet" />
+
+    <script src="_content/Telerik.UI.for.Blazor/js/telerik-blazor.js" defer></script>
 </head>
 <body>
     <app>
@@ -32,5 +35,14 @@
     </div>
 
     <script src="_framework/blazor.server.js"></script>
+
+    <script src="~/js/JavaScriptBootProcess.js"></script>
+    <script src="~/js/blazor-modal.js"></script>
+    <script>
+        window.scrollToParagraph = function (paragraphIndex) {
+            var element = document.querySelector('p:nth-child(' + (paragraphIndex + 1) + ')');
+            window.scrollTo(0, element.offsetTop);
+        }
+    </script>
 </body>
 </html>

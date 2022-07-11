@@ -1,0 +1,20 @@
+﻿@page "/test"
+
+@s1
+@(s1)
+<br />
+@{
+   Random r = new Random();
+}
+@(r.Next())
+<br />
+@(s2)
+@{
+   @:(s2)
+}
+@((MarkupString)s2)
+
+@code {
+   string s1 = "Hello";
+   string s2 = "<h1>Hello</h1>";
+}
