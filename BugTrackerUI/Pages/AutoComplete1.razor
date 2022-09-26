@@ -1,0 +1,22 @@
+﻿@page "/auto-complete1"
+
+
+@* AutoComplete with two-way value binding and data binding to a primitive type *@
+
+User input: @TheValue
+<br />
+<TelerikAutoComplete @ref="@AutoCompleteRef" Data="@Suggestions" @bind-Value="@TheValue" DebounceDelay=500
+    Placeholder="Enter your role (can be free text)" ClearButton="true" />
+
+<TelerikButton >Open Popup</TelerikButton>
+
+@code{
+    TelerikAutoComplete<string> AutoCompleteRef { get; set; }
+
+    //Current value is null (no item is selected) which allows the Placeholder to be displayed.
+    string TheValue { get; set; }
+
+    List<string> Suggestions { get; set; } = new List<string> {
+        "Manager", "Developer", "QA", "Technical Writer", "Support Engineer", "Sales Agent", "Architect", "Designer"
+    };
+}

@@ -1,0 +1,95 @@
+﻿@page "/grid1"
+
+@*https://docs.telerik.com/blazor-ui/knowledge-base/grid-center-checkbox-column*@
+<h1>Center the Checkbox Column</h1>
+
+<h2>Use a Narrow Checkbox Column</h2>
+
+<TelerikGrid Data="@GridData"
+             SelectionMode="GridSelectionMode.Multiple"
+             @bind-SelectedItems="@SelectedItems"
+             OnStateInit="(GridStateEventArgs<Product> args) => GridInitializing(args)"
+             OnStateChanged="(GridStateEventArgs<Product> args) => GridChanging(args)"
+             @ref="theGrid">
+   <GridColumns>
+      <GridCheckboxColumn SelectAll="true" Title="Select" Width="40px" />
+      <GridColumn Field=@nameof(Product.Name) Title="Product Name" />
+   </GridColumns>
+</TelerikGrid>
+
+<h2>Center the First Column</h2>
+
+<TelerikGrid Data="@GridData" Class="center-first-column"
+             SelectionMode="GridSelectionMode.Multiple"
+             @bind-SelectedItems="@SelectedItems">
+   <GridColumns>
+      <GridCheckboxColumn SelectAll="true" />
+      <GridColumn Field=@nameof(Product.Name) Title="Product Name" />
+   </GridColumns>
+</TelerikGrid>
+
+<style>
+   .center-first-column th:first-child,
+   .center-first-column td:first-child {
+       text-align: center;
+   }
+</style>
+
+<h2>Use a Custom CSS Class for the Checkbox Column</h2>
+
+<TelerikGrid Data="@GridData"
+             SelectionMode="GridSelectionMode.Multiple"
+             @bind-SelectedItems="@SelectedItems">
+   <GridColumns>
+      <GridCheckboxColumn SelectAll="false"
+                          OnCellRender="@( (GridCellRenderEventArgs args) => args.Class = "center-cell" )" />
+      <GridColumn Field=@nameof(Product.Name) Title="Product Name" />
+   </GridColumns>
+</TelerikGrid>
+
+<style>
+   .k-grid .center-cell {
+       text-align: center;
+   }
+</style>
+
+@code {
+   List<Product> GridData { get; set; } = new List<Product>();
+   IEnumerable<Product> SelectedItems { get; set; } = new List<Product>();
+   TelerikGrid<Product> theGrid;
+
+   protected override void OnInitialized()
+   {
+      for (int i = 1; i <= 5; i++)
+      {
+         GridData.Add(new Product()
+         {
+            ID = i,
+            Name = "Product " + i.ToString()
+         });
+      }
+   }
+
+   void GridInitializing(GridStateEventArgs<Product> e)
+   {
+
+   }
+
+   async void GridChanging(GridStateEventArgs<Product> e)
+   {
+      await Task.Delay(100);
+
+      if (theGrid != null &&
+          e.PropertyName == "SelectedItems" &&
+          e.GridState.SelectedItems.Count > 0)
+      {
+
+      }
+   }
+
+   public class Product
+   {
+      public int ID { get; set; }
+      public string Name { get; set; }
+   }
+}

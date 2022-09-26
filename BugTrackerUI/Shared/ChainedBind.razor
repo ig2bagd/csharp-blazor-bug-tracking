@@ -1,0 +1,16 @@
+﻿<h3 class="bg-info text-white">@MyPhrase</h3>
+
+<button class="btn btn-warning" @onclick="UpdatePhrase">Update Phrase</button>
+ 
+@code {
+    [Parameter]
+    public string MyPhrase { get; set; }
+ 
+    [Parameter]
+    public EventCallback<string> MyPhraseChanged { get; set; }
+
+    private async Task UpdatePhrase()
+    {
+        await MyPhraseChanged.InvokeAsync("Brock Lesnar is stronger than Bill Goldberg");
+    }
+}

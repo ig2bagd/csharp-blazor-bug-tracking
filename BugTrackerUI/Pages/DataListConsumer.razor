@@ -1,0 +1,75 @@
+﻿@page "/datalistdemo"  
+@inject AppDbContext db
+
+@if (EmployeeData != null)  
+{  
+    <DataList DataItems="@EmployeeData" 
+              Context="context" 
+              DataItemType="Employee">  
+        <HeaderTemplate>  
+            <td  align="center">
+                <h3>List of Employees</h3>
+            </td>
+        </HeaderTemplate>  
+        <ItemTemplate>  
+             <table cellpadding="10">
+                <tr>
+                    <td align="right">Employee ID :</td>
+                    <td align="left">@context.EmployeeID</td>
+                </tr>
+                 <tr>
+                    <td align="right">First Name :</td>
+                    <td align="left">@context.FirstName</td>
+                </tr>
+                 <tr>
+                    <td align="right">Last Name :</td>
+                    <td align="left">@context.LastName</td>
+                </tr>
+                 <tr>
+                    <td align="right">Title :</td>
+                    <td align="left">@context.Title</td>
+                </tr>
+            </table>
+        </ItemTemplate>  
+        <FooterTemplate>  
+            <td  align="center">
+                <h3>Total Employees : @EmployeeData.Count</h3>
+            </td>  
+        </FooterTemplate>  
+    </DataList>  
+} 
+
+@if (CustomerData != null)  
+{  
+    <DataList DataItems="@CustomerData">  
+        <HeaderTemplate>  
+            <th>Customer ID</th>  
+            <th>Company Name</th>  
+            <th>Contact Name</th> 
+            <th>Country</th>
+        </HeaderTemplate>  
+        <ItemTemplate>  
+            <td>@context.CustomerID</td>  
+            <td>@context.CompanyName</td>  
+            <td>@context.ContactName</td>  
+            <td>@context.Country</td>  
+        </ItemTemplate>  
+        <FooterTemplate>  
+            <td colspan="3">
+                <h3>Total Customers : 
+                    @CustomerData.Count</h3>
+            </td>  
+        </FooterTemplate>  
+    </DataList>  
+}
+
+@code {
+    public List<Employee> EmployeeData { get; set; }
+    public List<Customer> CustomerData { get; set; }
+      
+    protected override void OnInitialized()
+    {
+        EmployeeData = db.Employees.Take(2).ToList();
+        CustomerData = db.Customers.Take(3).ToList();
+    }  
+}

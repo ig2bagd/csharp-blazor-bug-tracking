@@ -1,0 +1,47 @@
+﻿@page "/grid2"
+@* Stopping the Click event from propagating on the clickable elements in your template prevents the grid column from receiving the event and sorting *@
+@*https://docs.telerik.com/blazor-ui/knowledge-base/grid-click-header-template-sorts*@
+
+<TelerikGrid Data="@MyData" Height="400px"
+             Pageable="true" Sortable="true" 
+             FilterMode="GridFilterMode.FilterRow"
+             Resizable="true" Reorderable="true">
+    <GridColumns>
+        <GridColumn Field="@(nameof(SampleData.Id))" Width="120px"/>
+        <GridColumn Field="@(nameof(SampleData.Name))" Title="Employee Name" Groupable="false">
+            <HeaderTemplate>
+                <div class="row">
+                    <div class="col d-flex align-items-center">
+                        <div @onclick:stopPropagation="true"
+
+                            style="padding-right: 1rem; cursor: pointer" data-toggle="tooltip" data-placement="bottom" title="Show all elements">
+                            <TelerikCheckBox Value="@isChecked" />
+                        </div>
+                        <span>Elements</span>
+                    </div>
+                </div>
+            </HeaderTemplate>
+        </GridColumn>
+        <GridColumn Field="@(nameof(SampleData.Team))" Title="Team" />
+        <GridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" />
+    </GridColumns>
+</TelerikGrid>
+
+@code {
+    bool isChecked { get; set; }
+    public IEnumerable<SampleData> MyData = Enumerable.Range(1, 30).Select(x => new SampleData
+    {
+        Id = x,
+        Name = "name " + x,
+        Team = "team " + x % 5,
+        HireDate = DateTime.Now.AddDays(-x).Date
+    });
+
+    public class SampleData
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Team { get; set; }
+        public DateTime HireDate { get; set; }
+    }
+}

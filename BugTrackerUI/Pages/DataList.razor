@@ -1,0 +1,31 @@
+﻿@typeparam DataItemType
+
+<table border="1" cellpadding="10">  
+    <thead>  
+        <tr>@HeaderTemplate</tr>  
+    </thead>  
+    <tbody>  
+        @foreach (var item in DataItems)  
+        {  
+            <tr>@ItemTemplate(item)</tr>  
+        }  
+    </tbody>  
+    <tfoot>  
+        <tr>@FooterTemplate</tr>  
+    </tfoot>  
+</table>
+
+@code {  
+
+    [Parameter]  
+    public List<DataItemType> DataItems { get; set; }  
+
+    [Parameter]  
+    public RenderFragment HeaderTemplate { get; set; }  
+      
+    [Parameter]  
+    public RenderFragment<DataItemType> ItemTemplate { get; set; } 
+      
+    [Parameter]  
+    public RenderFragment FooterTemplate { get; set; }  
+} 

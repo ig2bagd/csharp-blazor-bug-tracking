@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using BugTrackerUI.Services;
+using BugTrackerUI.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace BugTrackerUI
 {
@@ -31,12 +33,17 @@ namespace BugTrackerUI
          services.AddRazorPages();
          services.AddServerSideBlazor().AddCircuitOptions(option => { option.DetailedErrors = _env.IsDevelopment(); });
          services.AddTelerikBlazor();
+
+         services.AddHttpClient();
+         //services.AddTransient<IUrbanAreaService, UrbanAreaService>();
+
          services.AddSingleton<IBugService, BugService>();
          services.AddScoped<JsConsole>();
          services.AddScoped<IOrderService, OrderService>();
          services.AddScoped<IProductService, ProductService>();
 
-         var cs = Configuration.GetConnectionString("DefaultConnection");
+         services.AddDbContext<AppDbContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("AppDb")));
+         //var cs = Configuration.GetConnectionString("DefaultConnection");
          //services.AddDbContextFactory<WeatherDbContext>(opt => opt.UseSqlServer(cs));
          /* services.AddDbContext<WeatherDbContext>(opt => opt.UseSqlServer(cs)); */
       }

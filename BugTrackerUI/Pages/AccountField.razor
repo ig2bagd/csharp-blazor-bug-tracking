@@ -1,0 +1,57 @@
+﻿@using System.Diagnostics
+
+Account:
+<input @oninput="OnAccountChanged" required
+       type="@(showAccount ? "text" : "password")"
+       value="@Account" />
+
+<button class="btn btn-primary" @onclick="ToggleShowAccount">Show Account</button>
+
+<span class="text-danger">@validationMessage</span>
+
+@code {
+   private bool showAccount;
+   private string account;
+   private string validationMessage;
+
+   [Parameter]
+   public string Account
+   {
+      get { return account ?? string.Empty; }
+      set
+      {
+         Debug.WriteLine("account: " + account +"; value: " + value);
+         if (account != value)
+         {
+            if (value.Contains(' '))
+            {
+               validationMessage = "No spaces allowed";
+            }
+            else
+            {
+               account = value;
+               validationMessage = string.Empty;
+            }
+         }
+         //else
+         //{
+         //   if (value !=null && !value.Contains(' ')) validationMessage = string.Empty;
+         //}
+      }
+   }
+
+   [Parameter]
+   public EventCallback<string> AccountChanged { get; set; }
+
+   private Task OnAccountChanged(ChangeEventArgs e)
+   {
+      Account = e.Value.ToString();
+      return AccountChanged.InvokeAsync(Account);
+   }
+
+   private void ToggleShowAccount()
+   {
+      showAccount = !showAccount;
+   }
+
+}

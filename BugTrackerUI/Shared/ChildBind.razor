@@ -4,12 +4,17 @@
         <p class="card-text">
             Child <code>Year</code>: @Year
         </p>
-        <button @onclick="UpdateYearFromChild">Update Year from Child</button>
+        <button @onclick="UpdateYearFromChild">Update Year from Child</button><br/><br/>
+        <input type="checkbox" checked="@IsSelected" @onchange="CheckBoxChanged" />
     </div>
 </div>
 
 @code {
     private Random r = new Random();
+    private bool IsSelected { get; set; }
+
+    [Parameter]
+    public int Id { get; set; }
 
     [Parameter]
     public int Year { get; set; }
@@ -17,8 +22,17 @@
     [Parameter]
     public EventCallback<int> YearChanged { get; set; }
 
+    [Parameter]
+    public EventCallback<(bool, int)> OnEmployeeSelection { get; set; }
+
     private async Task UpdateYearFromChild()
     {
         await YearChanged.InvokeAsync(r.Next(1950, 2021));
+    }
+
+    private async Task CheckBoxChanged(ChangeEventArgs e)
+    {
+        IsSelected = (bool)e.Value;
+        await OnEmployeeSelection.InvokeAsync((IsSelected, Id));
     }
 }

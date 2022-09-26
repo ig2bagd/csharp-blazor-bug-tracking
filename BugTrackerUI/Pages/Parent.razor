@@ -1,19 +1,43 @@
 ﻿@page "/Parent"
 
 <h1>Parent Component</h1>
+@*https://stackoverflow.com/questions/65184334/blazor-eventcallback-with-multiple-params-how-to-respond-to-event-in-parent-ho*@
 
 <p>Parent <code>year</code>: @year</p>
+<p>Selection count: @SelectedEmployeesCount</p>
+<p>Child Id selected: @idSelected</p>
 
 <button @onclick="UpdateYear">Update Parent <code>year</code></button>
 
-<ChildBind @bind-Year="year" />
+<ChildBind Id=1 @bind-Year="year" OnEmployeeSelection="@((args) => EmployeeSelectionChanged(args.Item1, args.Item2))"/>
+<ChildBind Id=2 @bind-Year="year" OnEmployeeSelection="@((args) => EmployeeSelectionChanged(args.Item1, args.Item2))"/>
+<ChildBind Id=3 @bind-Year="year" OnEmployeeSelection="@((args) => EmployeeSelectionChanged(args.Item1, args.Item2))"/>
+
+
 
 @code {
     private Random r = new Random();
     private int year = 1979;
+    private int idSelected;
+
+    private int SelectedEmployeesCount { get; set; } = 0;
 
     private void UpdateYear()
     {
         year = r.Next(1950, 2021);
+    }
+
+    private void EmployeeSelectionChanged(bool isSelected, int id)
+    {
+        if(isSelected)
+        {
+            SelectedEmployeesCount++;
+        }
+        else
+        {
+            SelectedEmployeesCount--;
+        }
+
+        idSelected = id;
     }
 }

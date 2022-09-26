@@ -1,0 +1,105 @@
+﻿@page "/grid3"
+@using Telerik.DataSource.Extensions
+
+@*https://docs.telerik.com/blazor-ui/common-features/data-binding/onread*@
+
+<TelerikDropDownList @ref="@theDropDown"
+                     TItem="@SampleModel"
+                     TValue="@int"
+                     OnRead="@OnDropDownRead"
+                     @bind-Value="@DropDownValue"
+                     ValueField="@nameof(SampleModel.Id)"
+                     TextField="@nameof(SampleModel.Text)"
+                     Width="200px">
+    <ValueTemplate>
+        @context.Id : @context.Text
+    </ValueTemplate>
+    <ItemTemplate>
+        @context.Id : @context.Text
+    </ItemTemplate>
+</TelerikDropDownList>
+
+<TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary"
+               OnClick="@RebindComponents">Rebind Components</TelerikButton>
+
+<br /><br />
+
+<TelerikGrid @ref="@theGrid"
+             TItem="@SampleModel"
+             OnRead="@OnGridRead"
+             AutoGenerateColumns="true"
+             Sortable="true"
+             Pageable="true"
+             FilterMode="@GridFilterMode.FilterRow"
+             Height="400px" />
+
+<p> OnGridRead fired at: @LastOnRead </p>
+
+@code {
+    TelerikGrid<SampleModel> theGrid { get; set; }
+    TelerikDropDownList<SampleModel, int> theDropDown { get; set; }
+
+    private List<SampleModel> GridData { get; set; }
+    private List<SampleModel> DropDownData { get; set; }
+
+    int DropDownValue { get; set; } = 3; 
+
+    private string LastOnRead { get; set; }
+
+    // always use async Task, and not async void
+    private async Task OnGridRead(GridReadEventArgs args)
+    {
+        var result = await GridData.ToDataSourceResultAsync(args.Request);
+        args.Data = result.Data;
+        args.Total = result.Total;
+
+        var now = DateTime.Now;
+        LastOnRead = now.ToLongTimeString() + "." + now.Millisecond;
+    }
+
+    async Task OnDropDownRead(DropDownListReadEventArgs args)
+    {
+        var result = await DropDownData.ToDataSourceResultAsync(args.Request);
+        args.Data = result.Data;
+        args.Total = result.Total;
+    }
+
+    void RebindComponents()
+    {
+        GenerateData(); // simulate change in the data
+
+        theGrid.Rebind();
+        theDropDown.Rebind();
+    }
+
+    protected override void OnInitialized()
+    {
+        GenerateData();
+
+        base.OnInitialized();
+    }
+
+    private void GenerateData()
+    {
+        GridData = new List<SampleModel>();
+        DropDownData = new List<SampleModel>();
+
+        var rnd = new Random();
+
+        for (int i = 1; i <= 1000; i++)
+        {
+            GridData.Add(new SampleModel() { Id = i, Text = $"Grid Text {i}" });
+        }
+
+        for (int i = 1; i <= 10; i++)
+        {
+            DropDownData.Add(new SampleModel() { Id = i, Text = $"Text {rnd.Next(1, 100)}" });
+        }
+    }
+
+    public class SampleModel
+    {
+        public int Id { get; set; }
+        public string Text { get; set; }
+    }
+}

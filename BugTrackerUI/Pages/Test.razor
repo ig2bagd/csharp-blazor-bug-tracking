@@ -11,10 +11,54 @@
 @(s2)
 @{
    @:(s2)
+
 }
 @((MarkupString)s2)
+
+<hr />
+
+<DateField @bind-Date="dte" />
+<br />
+<br />
+
+<AccountField @bind-Account="account"></AccountField>
+<br />
+<br />
+
+<ChainedBind @bind-MyPhrase="wwe" />
+<br />
+
+<div>
+   <ListViewTemplate Items="customers">
+      <ItemTemplate Context="customer">
+         <ul>
+            <li>Name: @customer.Name</li>
+            <li>Age: @customer.Age</li>
+         </ul>
+      </ItemTemplate>
+   </ListViewTemplate>
+</div>
+
 
 @code {
    string s1 = "Hello";
    string s2 = "<h1>Hello</h1>";
+
+   private DateTime? dte = new DateTime(2022, 1, 1);
+
+   private string account;
+
+   private string wwe = "Bill Goldberg is stronger than Brock Lesnar";
+
+
+   [Parameter]
+   public IReadOnlyList<Customer1> customers { get; set; } =
+      new List<Customer1>()
+      {
+         new Customer1("John", 56),
+         new Customer1("Sandy", 34),
+         new Customer1("Andrew", 45),
+         new Customer1("Emily", 47)
+      };
+
 }

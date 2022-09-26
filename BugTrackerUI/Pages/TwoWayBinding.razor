@@ -12,7 +12,8 @@ Date value:
 <br />
 <hr />
 
-<ChildTwoWayBinding @bind-MainTitle="Title" @bind-MainTitle:event="MainTitleChanged"/>
+@*<ChildTwoWayBinding @bind-MainTitle="Title" @bind-MainTitle:event="MainTitleChanged"/>*@
+<ChildTwoWayBinding @bind-MainTitle="Title"/>
 
 @code {
     public string Title { get; set; } = "Two-Way Binding";

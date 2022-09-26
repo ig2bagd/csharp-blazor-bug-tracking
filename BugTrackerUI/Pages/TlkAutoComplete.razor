@@ -1,0 +1,88 @@
+﻿@page "/AutoComplete"
+
+@*@inject HttpClient http*@
+@inject IHttpClientFactory ClientFactory
+
+
+User input 1: @TheValue
+<br />
+<TelerikAutoComplete Data="@Suggestions" @bind-Value="@TheValue"
+    Placeholder="Enter your role (can be free text)" ClearButton="true" />
+
+<br />
+User input 2: @SecondValue
+<br />
+<TelerikAutoComplete Data="@ArraySuggestions" @bind-Value="@SecondValue" />
+
+<br />
+User input 3: @ThirdValue
+<br />
+<TelerikAutoComplete Data="@Suggs" ValueField="@( nameof(SuggestionsModel.Suggestion) )" @bind-Value="@ThirdValue" />
+
+
+<br />
+<TelerikAutoComplete ScrollMode="@DropDownScrollMode.Virtual"
+                     Id="city-select"
+                     Data="@UrbanAreas"
+                     ValueField="@(nameof(UrbanAreaDto.City))"
+                     Width="100%"
+                     Filterable="true"
+                     PageSize="10"
+                     ItemHeight="35"
+                     FilterOperator="@StringFilterOperator.Contains">
+    <AutoCompleteSettings>
+        <AutoCompletePopupSettings Height="300px"></AutoCompletePopupSettings>
+    </AutoCompleteSettings>
+    <ItemTemplate>
+        <span>@($"{context.City} ({context.Country})")</span>
+    </ItemTemplate>
+</TelerikAutoComplete>
+
+@code {
+    string TheValue { get; set; }
+    List<string> Suggestions { get; set; } = new List<string> {
+        "Manager", "Developer", "QA", "Technical Writer", "Support Engineer", "Sales Agent", "Architect", "Designer"
+    };
+
+    string SecondValue { get; set; }
+    string[] ArraySuggestions = new string[] { "one", "two", "three" };
+
+    
+    string ThirdValue { get; set; }
+    List<SuggestionsModel> Suggs { get; set; } = new List<SuggestionsModel>
+    {
+        new SuggestionsModel { Suggestion = "first", SomeOtherField = 1 },
+        new SuggestionsModel { Suggestion = "second", SomeOtherField = 2 },
+        new SuggestionsModel { Suggestion = "third", SomeOtherField = 3 }
+    };
+    public class SuggestionsModel
+    {
+        public string Suggestion { get; set; }//the auto complete needs only the string field
+        public int SomeOtherField { get; set; }
+    }
+
+    // https://demos.telerik.com/blazor-ui/autocomplete/virtualization
+    // https://learn.microsoft.com/en-us/aspnet/core/blazor/call-web-api?view=aspnetcore-3.1&pivots=server
+    private readonly IHttpClientFactory _clientFactory;
+
+    private UrbanAreaService _urbanAreaService;
+    private UrbanAreaService urbanAreaService
+    {
+        get
+        {
+            if(_urbanAreaService == null)
+            {
+                var client = ClientFactory.CreateClient();
+                _urbanAreaService = new UrbanAreaService(client);
+            }
+
+            return _urbanAreaService;
+        }
+    }
+    public IEnumerable<UrbanAreaDto> UrbanAreas { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        UrbanAreas = await urbanAreaService.GetUrbanAreas();
+    }
+}
