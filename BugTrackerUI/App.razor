@@ -1,20 +1,35 @@
+@inject IdentityInformation _identity;
+
+<Fluxor.Blazor.Web.StoreInitializer/>
+
 <Error>
-   <Router AppAssembly="@typeof(Program).Assembly">
-      <Found Context="routeData">
-         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-      </Found>
-      <NotFound>
-         <LayoutView Layout="@typeof(MainLayout)">
-            <p>Sorry, there's nothing at this address.</p>
-         </LayoutView>
-      </NotFound>
-   </Router>
+   <CascadingAuthenticationState>
+      <Router AppAssembly="@typeof(Program).Assembly">
+         <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+         </Found>
+         <NotFound>
+            <LayoutView Layout="@typeof(MainLayout)">
+               <p>Sorry, there's nothing at this address.</p>
+            </LayoutView>
+         </NotFound>
+      </Router>
+   </CascadingAuthenticationState>
 </Error>
 
+
+
 @code {
-  protected override void OnInitialized()
-  {
-    System.Diagnostics.Debug.WriteLine("Blazor initialised: " + DateTime.Now.ToString("mm:ss.fff"));
-    base.OnInitialized();
-  }
+
+   [Parameter]
+   public InitialApplicationState InitialState { get; set; }
+
+   protected override void OnInitialized()
+   {
+      _identity.IsAuthenticated = InitialState.IsAuthenticated;
+      _identity.Username = InitialState.Username;
+
+      System.Diagnostics.Debug.WriteLine("Blazor initialised: " + DateTime.Now.ToString("mm:ss.fff"));
+      base.OnInitialized();
+   }
 }

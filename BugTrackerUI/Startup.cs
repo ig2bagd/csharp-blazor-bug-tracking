@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using BugTrackerUI.Services;
 using BugTrackerUI.Data;
 using Microsoft.EntityFrameworkCore;
+using Fluxor;
 
 namespace BugTrackerUI
 {
@@ -30,22 +31,28 @@ namespace BugTrackerUI
       // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
       public void ConfigureServices(IServiceCollection services)
       {
-         services.AddRazorPages();
+         //services.AddRazorPages();
+
+         services.AddMvc();			               // configures both Razor Pages and MVC or individually as shown below:		
+         //services.AddControllersWithViews();
+         //services.AddRazorPages();
+
          services.AddServerSideBlazor().AddCircuitOptions(option => { option.DetailedErrors = _env.IsDevelopment(); });
          services.AddTelerikBlazor();
 
-         services.AddHttpClient();
+         services.AddHttpClient();        // register an instance of type IHttpClientFactory
          //services.AddTransient<IUrbanAreaService, UrbanAreaService>();
 
          services.AddSingleton<IBugService, BugService>();
          services.AddScoped<JsConsole>();
          services.AddScoped<IOrderService, OrderService>();
          services.AddScoped<IProductService, ProductService>();
+         services.AddScoped<IdentityInformation>();
 
-         services.AddDbContext<AppDbContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("AppDb")));
-         //var cs = Configuration.GetConnectionString("DefaultConnection");
-         //services.AddDbContextFactory<WeatherDbContext>(opt => opt.UseSqlServer(cs));
-         /* services.AddDbContext<WeatherDbContext>(opt => opt.UseSqlServer(cs)); */
+         services.AddDbContext<AppDbContext>(o => o.UseSqlServer(Configuration.GetConnectionString("AppDb")));
+
+         // Add Fluxor
+         services.AddFluxor(o => o.ScanAssemblies(typeof(Startup).Assembly).UseReduxDevTools());
       }
 
       // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,9 +76,10 @@ namespace BugTrackerUI
 
          app.UseEndpoints(endpoints =>
          {
-               //endpoints.MapRazorPages();
-               //endpoints.MapControllers();
-               endpoints.MapBlazorHub();
+            //endpoints.MapRazorPages();
+            endpoints.MapControllers();      // To serve Controllers & APIs
+
+            endpoints.MapBlazorHub();
             endpoints.MapFallbackToPage("/_Host");
          });
       }

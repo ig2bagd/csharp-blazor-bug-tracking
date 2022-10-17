@@ -1,4 +1,4 @@
-﻿@page "/AutoComplete"
+﻿@page "/TlkAutoComplete"
 
 @*@inject HttpClient http*@
 @inject IHttpClientFactory ClientFactory
@@ -63,9 +63,11 @@ User input 3: @ThirdValue
 
     // https://demos.telerik.com/blazor-ui/autocomplete/virtualization
     // https://learn.microsoft.com/en-us/aspnet/core/blazor/call-web-api?view=aspnetcore-3.1&pivots=server
-    private readonly IHttpClientFactory _clientFactory;
+    // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-3.1
 
+    // private readonly IHttpClientFactory _clientFactory;
     private UrbanAreaService _urbanAreaService;
+
     private UrbanAreaService urbanAreaService
     {
         get

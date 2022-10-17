@@ -1,0 +1,49 @@
+﻿@page "/TlkGrid"
+
+<h3>TlkGrid</h3>
+
+@*
+	edcharbeneau.com/blazor-layout-components/		
+	https://www.youtube.com/watch?v=jH4izI7_n00			continue @25:00
+*@
+<TelerikGridLayout>
+	<GridLayoutColumns>
+		<GridLayoutColumn Width="3fr"/>
+		<GridLayoutColumn Width="5fr"/>
+	</GridLayoutColumns>
+	<GridLayoutRows>
+		@for (int i = 0; i < 10; i++)
+		{
+			<GridLayoutRow Height="2fr" />
+			<GridLayoutRow Height="1fr" />
+		}
+	</GridLayoutRows>
+	<GridLayoutItems>
+		@for (int i = 0; i < 10; i++)
+		{
+			<GridLayoutItem>
+				1
+			</GridLayoutItem>
+			<GridLayoutItem>
+				2
+			</GridLayoutItem>
+			<GridLayoutItem>
+				3
+			</GridLayoutItem>
+			<GridLayoutItem>
+				4
+			</GridLayoutItem>		
+		}
+	</GridLayoutItems>
+</TelerikGridLayout>
+
+
+<TelerikStackLayout Orientation="StackLayoutOrientation.Horizontal" HorizontalAlign="StackLayoutHorizontalAlign.Center">
+	<p>Today - 64 F</p>
+	<p>Partially Cloudy</p>
+	<p>Precipitation: 25%</p>
+</TelerikStackLayout>
+
+@code {
+
+}

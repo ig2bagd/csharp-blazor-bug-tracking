@@ -1,7 +1,12 @@
 ﻿@page "/index"
 @using BugTrackerUI.Components
+@inject IdentityInformation _identity;
 
 <p>This dashboard will begin to fill with widgets as you develop.</p>
+<br />
+<p>User is authenticated: @_identity.IsAuthenticated</p>
+<p>Username: @(_identity.Username ?? "No username available")</p>
+<br />
 
 <TelerikButton OnClick="@SayHelloHandler" ThemeColor="primary">Say Hello</TelerikButton>
 
