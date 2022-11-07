@@ -15,6 +15,29 @@
 }
 @((MarkupString)s2)
 
+
+<br />
+<TelerikButton OnClick="@RetrieveGet">GET </TelerikButton>
+<br />
+<br />
+<TelerikDropDownList Data="@orderHists" TextField="ProductName" ValueField="Total" @bind-Value="selectedValue" Size="sm" Id="ddlOrderHist" Width="20%">
+   <DropDownListSettings>
+      <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+   </DropDownListSettings>
+    <ItemTemplate>
+        @((context as OrderHist).ProductName + " - " + (context as OrderHist).Total)
+    </ItemTemplate>
+</TelerikDropDownList>
+
+<br />
+<br />
+<button class="btn btn-primary" @onclick="RetrieveGet">
+   GET
+</button>
+
+<TelerikNotification @ref="@NotificationReference" Class="MyTelerikNotification"
+   HorizontalPosition="NotificationHorizontalPosition.Center" VerticalPosition="NotificationVerticalPosition.Top">
+</TelerikNotification>
 <hr />
 
 <DateField @bind-Date="dte" />
@@ -39,26 +62,12 @@
    </ListViewTemplate>
 </div>
 
-
-@code {
-   string s1 = "Hello";
-   string s2 = "<h1>Hello</h1>";
-
-   private DateTime? dte = new DateTime(2022, 1, 1);
-
-   private string account;
-
-   private string wwe = "Bill Goldberg is stronger than Brock Lesnar";
-
-
-   [Parameter]
-   public IReadOnlyList<Customer1> customers { get; set; } =
-      new List<Customer1>()
-      {
-         new Customer1("John", 56),
-         new Customer1("Sandy", 34),
-         new Customer1("Andrew", 45),
-         new Customer1("Emily", 47)
-      };
-
-}
+<style>
+    .MyTelerikNotification .k-notification-container .k-notification-wrap {
+        width: 300px;
+        height: 50px;
+        font-size: 1.5em;
+        text-align: center;
+        align-items: center;
+    }
+</style>
