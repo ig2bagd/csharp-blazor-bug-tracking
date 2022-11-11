@@ -12,8 +12,10 @@ using Microsoft.Extensions.Hosting;
 using BugTrackerUI.Services;
 using BugTrackerUI.Data;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Serialization;
 using Fluxor;
 using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace BugTrackerUI
 {
@@ -65,17 +67,12 @@ namespace BugTrackerUI
          services.AddHttpClient<INorthwindService, NorthwindService>( client =>
          {
             client.BaseAddress = new Uri(baseUri);
+            //client.DefaultRequestHeaders.Clear();
+            //client.DefaultRequestHeaders.Add("Accept", "application/vnd.github.v3+json");
+            //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/xml"));
          })
          .SetHandlerLifetime(TimeSpan.FromMinutes(5))       // Default is 2 mins
-         //.ConfigurePrimaryHttpMessageHandler(() =>
-         //{
-         //   return new HttpClientHandler()
-         //   {
-         //      UseDefaultCredentials = false,
-         //      Credentials = System.Net.CredentialCache.DefaultCredentials,
-         //      AllowAutoRedirect = true
-         //   };
-         //});
          .ConfigurePrimaryHttpMessageHandler(() =>
             new HttpClientHandler()
             {
@@ -98,6 +95,16 @@ namespace BugTrackerUI
             o.LogTo(Console.WriteLine);
          });
 
+
+         // Override the limit (32kb) SignalR can process in a single go
+         // https://medium.com/it-dead-inside/lets-learn-blazor-file-streaming-with-jsinterop-240cfc133452
+         // https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.signalr.huboptions.enabledetailederrors
+         services.AddSignalR(hubOptions =>
+         {
+            hubOptions.EnableDetailedErrors = true;
+            //hubOptions.MaximumReceiveMessageSize = 10 * 1024 * 1024; // 10MB
+         });
+         
          // Add Fluxor
          services.AddFluxor(o =>
             o.ScanAssemblies(typeof(Startup).Assembly)
@@ -109,6 +116,10 @@ namespace BugTrackerUI
       // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
       public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
       {
+         // Call UsePathBase first in the app's request processing pipeline
+         // https://learn.microsoft.com/en-us/aspnet/core/blazor/host-and-deploy/?view=aspnetcore-3.1&tabs=visual-studio#app-base-path-2
+         //app.UsePathBase("/CoolApp");
+
          if (env.IsDevelopment())
          {
             app.UseDeveloperExceptionPage();

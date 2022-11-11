@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspose.Cells" Version="22.3.0" />
     <PackageReference Include="Fluxor.Blazor.Web" Version="5.5.0" />
     <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="5.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
@@ -22,6 +23,10 @@
     <PackageReference Include="Serilog.AspNetCore" Version="6.0.1" />
     <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
     <PackageReference Include="Telerik.UI.for.Blazor" Version="3.6.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\uploads\" />
   </ItemGroup>
 
 </Project>
