@@ -16,15 +16,27 @@
 
 
 <br />
+@SelectedValue
+<br />
 <TelerikButton OnClick="@RetrieveGet">GET </TelerikButton>
 <br />
 <br />
-<TelerikDropDownList Data="@orderHists" TextField="ProductName" ValueField="Total" @bind-Value="selectedValue" Size="sm" Id="ddlOrderHist" Width="20%">
+@*<TelerikDropDownList Data="@orderHists" TextField="ProductName" ValueField="Total" @bind-Value="selectedValue" Size="sm" Id="ddlOrderHist" Width="45%">*@
+<TelerikDropDownList Data="@orderHists" @bind-Value="@SelectedValue" TextField="ProductName" ValueField="Total" @ref="@DropDownRef" Size="sm" Id="ddlOrderHist" Width="45%">
    <DropDownListSettings>
-      <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+      <DropDownListPopupSettings Height="250px"></DropDownListPopupSettings>
    </DropDownListSettings>
    <ItemTemplate>
-      @((context as OrderHist).ProductName + " - " + (context as OrderHist).Total)
+      <table width="100%">
+         <col style="width:80%">
+         <col style="width:20%">
+         <tbody>
+            <tr>
+               <td style="border:0">@((context as OrderHist).ProductName)</td>
+               <td style="border:0">@((context as OrderHist).Total)</td>
+            </tr>
+         </tbody>
+      </table>
    </ItemTemplate>
 </TelerikDropDownList>
 

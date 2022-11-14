@@ -3,18 +3,15 @@ using BugTrackerUI.Services;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Telerik.Blazor;
 using Telerik.Blazor.Components;
 
-using Aspose.Cells;
-using System.IO;
 
 namespace BugTrackerUI.Pages
 {
-   public partial class Test
+   public partial class Test : IDisposable
    {
       string s1 = "Hello";
       string s2 = "<h1>Hello</h1>";
@@ -44,15 +41,17 @@ namespace BugTrackerUI.Pages
             new Customer1("Emily", 47)
          };
 
-
-      int selectedValue { get; set; }
+      private TelerikDropDownList<OrderHist, int> DropDownRef { get; set; }
+      int SelectedValue { get; set; }
       protected IReadOnlyList<OrderHist> orderHists = new List<OrderHist>();
       protected IEnumerable<SalesByYear> salesByYear = new List<SalesByYear>();
       public TelerikNotification NotificationReference { get; set; }
 
+      private CancellationTokenSource source = new CancellationTokenSource(5000);
+
       protected override void OnInitialized()
       {
-         selectedValue = 3;
+         SelectedValue = 3;
       }
 
       async Task RetrieveGet()
@@ -63,6 +62,7 @@ namespace BugTrackerUI.Pages
          orderHists = await northwind.GetCustOrderHist("ANTON");
          salesByYear = await northwind.GetSalesByYear(DateTime.Parse("01/01/1998"), DateTime.Parse("01/10/1998"));
          //StateHasChanged();
+         DropDownRef.Rebind();
 
          // https://www.telerik.com/forums/why-such-a-bad-implementation
          NotificationReference.Show(new NotificationModel()
@@ -76,37 +76,23 @@ namespace BugTrackerUI.Pages
 
       }
 
-      async Task ExportExcel() => await Task.Run(() => Navigation.NavigateTo($"/getexcelreport", true));
+      //async Task ExportExcel() => await Task.Run(() => Navigation.NavigateTo($"/getexcelreport", true));
+      async Task ExportExcel() => await Task.Run(() => Navigation.NavigateTo($"/api/admin/excelreport", true));
+
       async Task ExportExcel2()
       {
-         /*
-         // https://docs.aspose.com/cells/net/different-ways-to-save-files/#saving-file-to-a-stream
-         // https://docs.aspose.com/cells/net/saving-file-to-response-object/
-         // https://stackoverflow.com/questions/58527572/is-there-a-way-to-get-a-file-stream-to-download-to-the-browser-in-blazor
-         Workbook wb = new Workbook();
-         Worksheet ws = wb.Worksheets[0];
-         ws.Cells["A1"].PutValue("Hello World!");
-         ws.Cells["B1"].PutValue("This is only a test");
-
-         //wb.Save(@"C:\Temp\TEST.xlsx", SaveFormat.Xlsx);
-
-         using (MemoryStream ms = new MemoryStream())
-         {
-            //wb.Save(ms, new XlsSaveOptions(SaveFormat.Xlsx));
-            wb.Save(ms, SaveFormat.Xlsx);
-            ms.Position = 0;
-
-            byte[] sheetData = ms.ToArray();
-         }
-         */
-
-         Navigation.NavigateTo($"/getexcelreport", true);
+         //Navigation.NavigateTo($"/getexcelreport", true);
+         Navigation.NavigateTo($"/api/admin/excelreport", true);
 
          //await Task.Delay(1000);
          await Task.CompletedTask;
       }
-      
 
+      public void Dispose()
+      {
+         source.Cancel();
+         source.Dispose();
+      }
    }
 
 }

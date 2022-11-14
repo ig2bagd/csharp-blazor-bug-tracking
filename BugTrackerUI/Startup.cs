@@ -17,6 +17,10 @@ using Fluxor;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
+using Polly;
+using Polly.Extensions.Http;
+using Microsoft.OpenApi.Models;
+
 namespace BugTrackerUI
 {
    public class Startup
@@ -36,9 +40,10 @@ namespace BugTrackerUI
       {
          string baseUri = Configuration.GetValue<string>("BaseUri");
 
-         services.AddMvc();			               // configures both Razor Pages and MVC or individually as shown below:		
-         //services.AddControllersWithViews();
-         //services.AddRazorPages();
+         services.AddMvc();			               // This method has all the features (Web API, MVC, and Razor Pages).		
+         //services.AddControllers();              // Web API
+         //services.AddControllersWithViews();     // MVC
+         //services.AddRazorPages();               // Razor Pages
 
          services.AddServerSideBlazor().AddCircuitOptions(option => { option.DetailedErrors = _env.IsDevelopment(); });
          services.AddTelerikBlazor();
@@ -46,23 +51,9 @@ namespace BugTrackerUI
          // register an instance of type IHttpClientFactory: Basic HTTPClient
          //services.AddHttpClient();         
          
-         /* 
          // Named client
          //services.AddHttpClient("AdminApi", client => client.BaseAddress = new Uri(BaseUri));
-         services.AddHttpClient("AdminApi", client => 
-         {
-            client.BaseAddress = new Uri(baseUri);
-         })
-         .ConfigurePrimaryHttpMessageHandler(() => 
-         {
-            return new HttpClientHandler()
-            {
-               UseDefaultCredentials = false,
-               Credentials = System.Net.CredentialCache.DefaultCredentials,
-               AllowAutoRedirect = true
-            };
-         });
-         */
+
          // Typed client: registers NorthwindService as a transient service
          services.AddHttpClient<INorthwindService, NorthwindService>( client =>
          {
@@ -73,6 +64,11 @@ namespace BugTrackerUI
             //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/xml"));
          })
          .SetHandlerLifetime(TimeSpan.FromMinutes(5))       // Default is 2 mins
+
+         .AddPolicyHandler(GetRetryPolicy())                                                                         // Polly
+         //.AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(600)))            // Polly
+         .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)))                       // Polly
+
          .ConfigurePrimaryHttpMessageHandler(() =>
             new HttpClientHandler()
             {
@@ -89,10 +85,21 @@ namespace BugTrackerUI
          services.AddScoped<IProductService, ProductService>();
          services.AddScoped<IdentityInformation>();
 
-         services.AddDbContext<AppDbContext>(o =>
+         // ==> Use in razor component: @using Microsoft.EntityFrameworkCore
+         //                             @inject IDbContextFactory<AppDbContext> ctxFactory
+         //                             using(var ctx = ctxFactory.CreateDbContext()) { ... }
+         services.AddDbContextFactory<AppDbContext>(o => o.UseSqlServer(Configuration.GetConnectionString("AppDb")));         // Use DbContextFactory in the Blazor part; EF Core 5+
+
+         services.AddDbContext<AppDbContext>(o =>                                                                             // Use DbContext in controllers or Razor pages
          {
             o.UseSqlServer(Configuration.GetConnectionString("AppDb"));
             o.LogTo(Console.WriteLine);
+         });
+
+         // Register the Swagger generator, defining 1 or more Swagger documents
+         services.AddSwaggerGen(c =>
+         {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
          });
 
 
@@ -134,8 +141,18 @@ namespace BugTrackerUI
          app.UseHttpsRedirection();
          app.UseStaticFiles();
 
-         app.UseRouting();
+         // Enable middleware to serve generated Swagger as a JSON endpoint.
+         app.UseSwagger();
 
+         // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+         // specifying the Swagger JSON endpoint.
+         app.UseSwaggerUI(c =>
+         {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+         });
+
+         app.UseRouting();
+         // https://www.tektutorialshub.com/asp-net-core/asp-net-core-endpoint-routing/
          app.UseEndpoints(endpoints =>
          {
             //endpoints.MapRazorPages();
@@ -144,6 +161,19 @@ namespace BugTrackerUI
             endpoints.MapBlazorHub();
             endpoints.MapFallbackToPage("/_Host");
          });
+
       }
+
+
+      // https://learn.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/implement-http-call-retries-exponential-backoff-polly
+      static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+      {
+         return HttpPolicyExtensions
+             .HandleTransientHttpError()
+             .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+             .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2,retryAttempt)));
+      }
+
+
    }
 }
