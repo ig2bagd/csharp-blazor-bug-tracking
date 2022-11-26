@@ -29,7 +29,7 @@ namespace BugTrackerUI.Services
 
          _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
       }
-
+      /*
       public async Task<IReadOnlyList<OrderHist>> GetCustOrderHist(string customerID)
       {
          //var client = factory.CreateClient("AdminApi");
@@ -54,6 +54,14 @@ namespace BugTrackerUI.Services
             Console.WriteLine(errMsg);
             throw new Exception(errMsg);
          }
+      }
+      */
+
+      public async Task<IReadOnlyList<OrderHist>> GetCustOrderHist(string customerID)
+      {
+         // https://marcominerva.wordpress.com/2020/05/21/json-handling-made-easy-with-system-net-http-json/
+         Orders = await client.GetFromJsonAsync<IReadOnlyList<OrderHist>>($"api/Admin/CustOrderHist/{customerID}");
+         return Orders;
       }
 
       /*

@@ -20,6 +20,8 @@ using System.Net.Http.Headers;
 using Polly;
 using Polly.Extensions.Http;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace BugTrackerUI
 {
@@ -45,19 +47,31 @@ namespace BugTrackerUI
          //services.AddControllersWithViews();     // MVC
          //services.AddRazorPages();               // Razor Pages
 
-         services.AddServerSideBlazor().AddCircuitOptions(option => { option.DetailedErrors = _env.IsDevelopment(); });
+         // https://learn.microsoft.com/en-us/aspnet/core/blazor/host-and-deploy/server?view=aspnetcore-6.0
+         // https://learn.microsoft.com/en-us/aspnet/core/blazor/fundamentals/signalr?view=aspnetcore-6.0#circuit-handler-options-for-blazor-server-apps-1
+         services.AddServerSideBlazor()
+            .AddCircuitOptions(option => 
+            { 
+               option.DetailedErrors = _env.IsDevelopment(); 
+            })
+            .AddHubOptions(options =>
+             {
+                options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);        // (default: 30 seconds)
+                options.HandshakeTimeout = TimeSpan.FromSeconds(30);             // (default: 15 seconds)
+             });
+         ;
          services.AddTelerikBlazor();
 
          // register an instance of type IHttpClientFactory: Basic HTTPClient
          //services.AddHttpClient();         
-         
+
          // Named client
          //services.AddHttpClient("AdminApi", client => client.BaseAddress = new Uri(BaseUri));
 
          // Typed client: registers NorthwindService as a transient service
-         services.AddHttpClient<INorthwindService, NorthwindService>( client =>
-         {
-            client.BaseAddress = new Uri(baseUri);
+         services.AddHttpClient<INorthwindService, NorthwindService>(client =>
+        {
+           client.BaseAddress = new Uri(baseUri);
             //client.DefaultRequestHeaders.Clear();
             //client.DefaultRequestHeaders.Add("Accept", "application/vnd.github.v3+json");
             //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -67,6 +81,11 @@ namespace BugTrackerUI
 
          .AddPolicyHandler(GetRetryPolicy())                                                                         // Polly
          //.AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(600)))            // Polly
+         .AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(new[]                                                 // Polly
+             {
+                 TimeSpan.FromSeconds(1),
+                 TimeSpan.FromSeconds(5)
+             }))
          .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)))                       // Polly
 
          .ConfigurePrimaryHttpMessageHandler(() =>
@@ -84,6 +103,7 @@ namespace BugTrackerUI
          services.AddScoped<IOrderService, OrderService>();
          services.AddScoped<IProductService, ProductService>();
          services.AddScoped<IdentityInformation>();
+         services.AddScoped<AuthenticationStateProvider, IdentityValidationProvider<IdentityUser>>();
 
          // ==> Use in razor component: @using Microsoft.EntityFrameworkCore
          //                             @inject IDbContextFactory<AppDbContext> ctxFactory
@@ -106,12 +126,13 @@ namespace BugTrackerUI
          // Override the limit (32kb) SignalR can process in a single go
          // https://medium.com/it-dead-inside/lets-learn-blazor-file-streaming-with-jsinterop-240cfc133452
          // https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.signalr.huboptions.enabledetailederrors
+         // https://learn.microsoft.com/en-us/aspnet/core/signalr/configuration?view=aspnetcore-6.0&tabs=dotnet#configure-server-options
          services.AddSignalR(hubOptions =>
          {
             hubOptions.EnableDetailedErrors = true;
             //hubOptions.MaximumReceiveMessageSize = 10 * 1024 * 1024; // 10MB
          });
-         
+
          // Add Fluxor
          services.AddFluxor(o =>
             o.ScanAssemblies(typeof(Startup).Assembly)
@@ -171,7 +192,7 @@ namespace BugTrackerUI
          return HttpPolicyExtensions
              .HandleTransientHttpError()
              .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
-             .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2,retryAttempt)));
+             .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
       }
 
 
